@@ -1,125 +1,169 @@
-console.log('test')
+import { gsap } from "gsap";
+import { Draggable } from "gsap/Draggable";
+gsap.registerPlugin(Draggable) 
 
 
 
 class MusicPlayer {
   // Explication : Le constructeur est la première fonction lancée quand la Classe est instanciée. On y initialise les propriété, et appelle des fonctions.
 
-  
+
   constructor() {
     console.log('constructor')
 
     // TODO DRAGGABLE : On va vouloir ajouter une propriété "img" à chaque objet, et y inscrire le lien de l'image que l'on veut charger. 
     // Pense bien à mettre tes images dans le dossier "public"
+    console.log(this)
     this.tracks = [
-      { id: 1, title: "Candy", url: "/Candy Official Audio.mp3" },
-      { id: 2, title: "Distance", url: "/Yebba Distance Lyric Video.mp3" },
-      { id: 3, title: "Lo-Fi Relax", url: "track3.mp3" }
+      { id: 1, title: "Dream Police", url: "/Dream Police Official Audio.mp3", img: "/MkgeeTSATDP.jpg", artist: "Mkgee", backgroundColor: '#203d46' },
+      { id: 2, title: "Distance", url: "/Yebba Distance.mp3", img: "/distaceyebba.jpg", artist: "Yebba", backgroundColor: '#fefefe' },
+      { id: 3, title: "Love Songs", url: "/Clairo Love Songs.mp3", img: "/LoveSongs.jpeg", artist: "Clairo", backgroundColor: '#204698' },
+      { id: 4, title: "House of Cards", url: "/Radiohead House of Cards.mp3", img: "/InRainbows.jpg", artist: "Radiohead", backgroundColor: '#f02326' },
+      { id: 5, title: "Juna", url: "/Clairo Juna.mp3", img: "/Charm.jpg", artist: "Clairo", backgroundColor: '#492c0d' },
     ];
-    this.currentTrackIndex = 0; 
+
+    this.initialValue = 0
+    this.currentTrackIndex = 0;
     this.audio = new Audio();
     this.isPlaying = false;
-    this.volume = 0.5; 
+    this.volume = 0.5;
     this.init();
+
+    console.log(this.tracks)
+    console.log(this.backgroundColor)
+
+
+  }
+
+
+  // Explication : Ici, on est en dehors du constructor, on y défini toutes les fonctions que la classe possède.
+
+
+  init() {
+    this.cacheDOM();
+    this.bindEvents();
+    this.setupDraggable();
+    this.loadTrack();
+    this.albumImage();
     
   }
-    
 
-// Explication : Ici, on est en dehors du constructor, on y défini toutes les fonctions que la classe possède.
+  albumImage() {
 
+    this.tracks.forEach(track => {
+      const img = document.createElement("img");
+      const li = document.createElement("li");
+      img.src = track.img;
+      li.appendChild(img)
+      this.playlist.appendChild(li)
+      track.elementImage = img;
 
-init() {
-  this.cacheDOM();
-  this.bindEvents();
-  // this.setupDraggable();
-  this.loadTrack();
-}
-
-
-// Bug: Regarde aussi la façon dont on déclare les variables/membres de classe. Rappelle toi que les "const" sont limité à leur portée de bloc (donc ici, à la fonction).@
-// Alors que les membres de classes (this.truc) sont appelable n'importe ou dans la classe.
-cacheDOM() {
-  const playlist = document.querySelector("#playlist");
-  this.playButton = document.querySelector("#play");
-  this.nextButton = document.querySelector("#next");
-  this.prevButton = document.querySelector("#prev");
-  this.trackTitle = document.querySelector("#track-title");
-}
-
-
-
-bindEvents() {
-  this.playButton.addEventListener("click", () => this.togglePlay());
-  this.nextButton.addEventListener("click", () => this.nextTrack()); 
-  this.prevButton.addEventListener("click", () => this.prevTrack());
-  this.audio.addEventListener("ended", () => this.nextTrack());
-}
-
-
-loadTrack(){
-if (this.currentTrackIndex < 0 || this.currentTrackIndex >= this.tracks.length) {
-  console.error("Index de piste invalide");
-  return;
-}
-this.audio.src = this.tracks[this.currentTrackIndex].url; 
-this.trackTitle.textContent = this.tracks[this.currentTrackIndex].title;
-// this.animateTitle();
-}
-
-togglePlay() {
-  if (this.isPlaying) { 
-    this.audio.pause();
-  } else {
-    this.audio.play().catch(err => console.error("Erreur de lecture :", err));
+    })
   }
+
+
+  // Bug: Regarde aussi la façon dont on déclare les variables/membres de classe. Rappelle toi que les "const" sont limité à leur portée de bloc (donc ici, à la fonction).@
+  // Alors que les membres de classes (this.truc) sont appelable n'importe ou dans la classe.
+  cacheDOM() {
+    this.playlist = document.querySelector("#playlist");
+    this.playButton = document.querySelector("#play");
+    this.nextButton = document.querySelector("#next");
+    this.prevButton = document.querySelector("#prev");
+    this.trackTitle = document.querySelector("#track-title");
+    this.trackImage = document.querySelector("#slider");
+    this.trackArtist = document.querySelector("#trackArtist");
+    this.background = document.querySelector("#background"); ``
+    console.log(this.background)
+  }
+
+  bindEvents() {
+    this.playButton.addEventListener("click", () => this.togglePlay());
+    this.nextButton.addEventListener("click", () => this.nextTrack());
+    this.prevButton.addEventListener("click", () => this.prevTrack());
+    this.audio.addEventListener("ended", () => this.nextTrack());
+  }
+
+
+  loadTrack() {
+    if (this.currentTrackIndex < 0 || this.currentTrackIndex >= this.tracks.length) {
+      console.error("Index de piste invalide");
+      return;
+    }
+    this.audio.src = this.tracks[this.currentTrackIndex].url;
+    this.trackTitle.textContent = this.tracks[this.currentTrackIndex].title;
+    this.trackArtist.textContent = this.tracks[this.currentTrackIndex].artist;
+    // this.trackImage.style.backgroundImage = `url("${this.tracks[this.currentTrackIndex].img
+    //   }")`;
+    this.background.style.backgroundColor = this.tracks[this.currentTrackIndex].backgroundColor;
+    // console.log(this.trackImage)
+  }
+
+
+  togglePlay() {
+    if (this.isPlaying) {
+      this.audio.pause();
+      console.log("paused")
+    } else {
+      this.audio.play().catch(err => console.error("Erreur de lecture :", err));
+    }
+  }
+
+  // Challenge : les fonction Next et previous track ont sensiblement le même traitement. En code, on cherche toujours à ne pas dupliquer de la logique, mais plutôt à factoriser.
+  // Peux tu créer une seule fonction à la place de deux ? Comment gérerais tu le cas à ce moment ?
+
+  nextTrack() {
+    this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
+    this.loadTrack();
+    this.audio.play(); // Bug: joue même si l'audio n'est pas chargé correctement
+    this.isPlaying = true
+  }
+
+  prevTrack() {
+    this.currentTrackIndex = (this.currentTrackIndex - 1 + this.tracks.length) % this.tracks.length;
+    this.loadTrack();
+    this.audio.play();
+    this.isPlaying = true;
+  }
+
+  setupDraggable() {
+      Draggable.create('#playlist', {type:'x'})
+      
+  }
+
+
 }
 
-// Challenge : les fonction Next et previous track ont sensiblement le même traitement. En code, on cherche toujours à ne pas dupliquer de la logique, mais plutôt à factoriser.
-// Peux tu créer une seule fonction à la place de deux ? Comment gérerais tu le cas à ce moment ?
+new MusicPlayer();
 
-nextTrack() {
-  this.currentTrackIndex = (this.currentTrackIndex + 1) % this.tracks.length;
-  this.loadTrack();
-  this.audio.play(); // Bug: joue même si l'audio n'est pas chargé correctement
-  this.isPlaying = true 
-}
+// setupDraggable() {
+//     if (typeof gsap !== "undefined" && gsap.Draggable) {
+//         gsap.registerPlugin(Draggable);
+//         Draggable.create("#progress-bar", {
+//             type: "x",
+//             bounds: "#slider-container",
+//             onDragEnd: () => this.seekTrack()
+//         });
+//     } else {
+//         console.error("GSAP ou Draggable non chargé");
+//     }
+// }
 
-prevTrack() {
-  this.currentTrackIndex = (this.currentTrackIndex - 1 + this.tracks.length) % this.tracks.length;
-  this.loadTrack();
-  this.audio.play();
-  this.isPlaying = true;
-}
+// seekTrack() {
+//     let progress = parseFloat(this.slider.style.left) / 100;
+//     this.audio.currentTime = this.audio.duration * progress;
+// }
 
-  // setupDraggable() {
-  //     if (typeof gsap !== "undefined" && gsap.Draggable) {
-  //         gsap.registerPlugin(Draggable);
-  //         Draggable.create("#progress-bar", {
-  //             type: "x",
-  //             bounds: "#slider-container",
-  //             onDragEnd: () => this.seekTrack()
-  //         });
-  //     } else {
-  //         console.error("GSAP ou Draggable non chargé");
-  //     }
-  // }
+// animateTitle() {
+//     if (typeof gsap !== "undefined" && gsap.SplitText) {
+//         let split = new SplitText("#track-title", { type: "chars" });
+//         gsap.from(split.chars, { opacity: 0, y: 10, stagger: 0.05 });
+//     } else {
+//         console.error("GSAP SplitText non chargé");
+//     }
+// }
 
-  // seekTrack() {
-  //     let progress = parseFloat(this.slider.style.left) / 100;
-  //     this.audio.currentTime = this.audio.duration * progress;
-  // }
 
-  // animateTitle() {
-  //     if (typeof gsap !== "undefined" && gsap.SplitText) {
-  //         let split = new SplitText("#track-title", { type: "chars" });
-  //         gsap.from(split.chars, { opacity: 0, y: 10, stagger: 0.05 });
-  //     } else {
-  //         console.error("GSAP SplitText non chargé");
-  //     }
-  // }
-}
 
-new MusicPlayer()
 
 
 // BUG : Ici, on est en dehors de la classe Music Player. 

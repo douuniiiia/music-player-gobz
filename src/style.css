@@ -1,6 +1,9 @@
 body {
+  margin: 0;
   font-family: Arial, sans-serif;
-  padding: 20px;
+  background-color: rgb(41, 41, 41);
+  height: 100vh;
+
 }
 
 ul {
@@ -29,8 +32,15 @@ button {
   margin-top: 20px;
 }
 
-.hidden {
+/* .hidden {
   display: none;
+} */
+
+#background{
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  position: absolute;
 }
 
 #slider-container {
@@ -40,10 +50,86 @@ button {
   position: relative;
 }
 
+#slider{
+  background-size: cover;
+  width: 250px;
+  height: 250px;
+}
+
 #progress-bar {
-  width: 10px;
+  width: 250px;
   height: 10px;
   background: red;
-  position: absolute;
+  position: relative;
   cursor: pointer;
 }
+
+#buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, h2 {
+  color: white;
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+button{
+  border-radius: 25px;
+  border-color: white;
+  background: none;
+  color: white;
+}
+
+img{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 250px;
+  background-size: cover;
+  margin-right: 15px;
+  position: relative;
+  left: 0;
+}
+
+.player {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: absolute;
+  
+}
+
+
+#trackArtist {
+  color: white;
+  size: 20px;
+  margin-bottom: 10px;
+  margin-top: 0;
+}
+
+#previous {
+  width: 50px;
+  height: 50px;
+}
+
+#playlist {
+ display: flex;
+ flex-direction: row;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
