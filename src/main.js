@@ -1,6 +1,7 @@
 import { gsap } from "gsap";
 import { Draggable } from "gsap/Draggable";
-gsap.registerPlugin(Draggable) 
+gsap.registerPlugin(Draggable)
+// gsap.registerPlugin(SplitText)  
 
 
 
@@ -15,18 +16,19 @@ class MusicPlayer {
     // Pense bien à mettre tes images dans le dossier "public"
     console.log(this)
     this.tracks = [
-      { id: 1, title: "Dream Police", url: "/Dream Police Official Audio.mp3", img: "/MkgeeTSATDP.jpg", artist: "Mkgee", backgroundColor: '#203d46' },
-      { id: 2, title: "Distance", url: "/Yebba Distance.mp3", img: "/distaceyebba.jpg", artist: "Yebba", backgroundColor: '#fefefe' },
-      { id: 3, title: "Love Songs", url: "/Clairo Love Songs.mp3", img: "/LoveSongs.jpeg", artist: "Clairo", backgroundColor: '#204698' },
-      { id: 4, title: "House of Cards", url: "/Radiohead House of Cards.mp3", img: "/InRainbows.jpg", artist: "Radiohead", backgroundColor: '#f02326' },
-      { id: 5, title: "Juna", url: "/Clairo Juna.mp3", img: "/Charm.jpg", artist: "Clairo", backgroundColor: '#492c0d' },
+      { id: 1, title: "Dream Police", url: "/Dream Police Official Audio.mp3", img: "/MkgeeTSATDP.jpg", artist: "Mkgee", backgroundColor: 'radial-gradient(  #0c2124 30%, #acc4bc)' },
+      { id: 2, title: "Distance", url: "/Yebba Distance.mp3", img: "/distaceyebba.jpg", artist: "Yebba", backgroundColor: 'radial-gradient( rgb(117, 109, 74) ,#cfc3a9 ' },
+      { id: 3, title: "Love Songs", url: "/Clairo Love Songs.mp3", img: "/LoveSongs.jpeg", artist: "Clairo", backgroundColor: 'radial-gradient(#204698 ,#fcf3d4)' },
+      { id: 4, title: "House of Cards", url: "/Radiohead House of Cards.mp3", img: "/InRainbows.jpg", artist: "Radiohead", backgroundColor: 'radial-gradient(rgb(255, 164, 36),rgb(20, 20, 20))' },
+      { id: 5, title: "Juna", url: "/Clairo Juna.mp3", img: "/Charm.jpg", artist: "Clairo", backgroundColor: 'radial-gradient(  #492c0d, rgb(62, 65, 1)' },
     ];
-
     this.initialValue = 0
     this.currentTrackIndex = 0;
     this.audio = new Audio();
     this.isPlaying = false;
     this.volume = 0.5;
+    this.gap = 20;
+
     this.init();
 
     console.log(this.tracks)
@@ -45,6 +47,7 @@ class MusicPlayer {
     this.setupDraggable();
     this.loadTrack();
     this.albumImage();
+
     
   }
 
@@ -59,6 +62,9 @@ class MusicPlayer {
       track.elementImage = img;
 
     })
+
+    this.widthImage = this.tracks[0].elementImage.getBoundingClientRect().width
+
   }
 
 
@@ -94,8 +100,9 @@ class MusicPlayer {
     this.trackArtist.textContent = this.tracks[this.currentTrackIndex].artist;
     // this.trackImage.style.backgroundImage = `url("${this.tracks[this.currentTrackIndex].img
     //   }")`;
-    this.background.style.backgroundColor = this.tracks[this.currentTrackIndex].backgroundColor;
+    this.background.style.background = this.tracks[this.currentTrackIndex].backgroundColor;
     // console.log(this.trackImage)
+    
   }
 
 
@@ -108,6 +115,7 @@ class MusicPlayer {
     }
   }
 
+  
   // Challenge : les fonction Next et previous track ont sensiblement le même traitement. En code, on cherche toujours à ne pas dupliquer de la logique, mais plutôt à factoriser.
   // Peux tu créer une seule fonction à la place de deux ? Comment gérerais tu le cas à ce moment ?
 
@@ -116,6 +124,7 @@ class MusicPlayer {
     this.loadTrack();
     this.audio.play(); // Bug: joue même si l'audio n'est pas chargé correctement
     this.isPlaying = true
+    this.animateSlider();
   }
 
   prevTrack() {
@@ -123,15 +132,54 @@ class MusicPlayer {
     this.loadTrack();
     this.audio.play();
     this.isPlaying = true;
+    this.animateSlider();
+
   }
 
   setupDraggable() {
-      Draggable.create('#playlist', {type:'x'})
-      
+      this.drag = Draggable.create('#playlist', 
+        {type:'x',
+          onClick: function (){
+            console.log('clicked')
+          },
+          onDragEnd:() => {
+            console.log("drag ended")
+            console.log(this.drag[0].x)
+            if (this.drag[0].startX - this.drag[0].x > 0) {
+              console.log('next')
+              this.nextTrack();
+            }else{
+              console.log('prev')
+
+              this.prevTrack();
+            }
+            console.log(this.currentTrackIndex)
+            this.animateSlider();
+          },
+
+        })
+
+    
+  
+  }
+
+animateSlider() {
+  console.log('animate')
+    gsap.to('#playlist', {
+      x: -(this.widthImage + this.gap) * this.currentTrackIndex
+    })
   }
 
 
+
 }
+
+// let parentSplit = new SplitText(".tracktitle", {
+//   type: 'lines',
+//   lineClass: 'split-parent',
+// });
+
+// const h1Split = new SplitText('.tracktitle', { type: 'chars' });
 
 new MusicPlayer();
 
